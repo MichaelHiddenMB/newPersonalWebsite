@@ -1,20 +1,24 @@
 <!doctype html>
-<!-- Front artwork for the MDR keycard. 540x860 = 54x86mm card at 10px/mm.
-     Render: Chrome --headless --force-device-scale-factor=2 --window-size=540,860 --screenshot=badge.png badge.html -->
+<!-- MDR keycard artwork. Default 540x860 = 54x86mm card at 10px/mm (used by the Blender model).
+     ?w=<px> widens the card (extra width is plain blue on the right), ?side=back renders the back.
+     Render: Chrome --headless --force-device-scale-factor=2 --window-size=<w>,860 --screenshot=out.png "badge.html?w=<w>"
+       badge.png               -> window 540x860  (Blender keycard)
+       src/components/Lanyard/card-front.png -> ?w=570  (React Bits card face, 0.663 aspect)
+       src/components/Lanyard/card-back.png  -> ?w=570&side=back -->
 <html>
 <head>
 <meta charset="utf-8">
 <style>
-  html, body { margin: 0; width: 540px; height: 860px; overflow: hidden; background: #0B4596; }
+  html, body { margin: 0; height: 860px; overflow: hidden; background: #0B4596; }
   text { font-family: "Arial Rounded MT Bold", "Arial Rounded Bold", Arial, sans-serif; fill: #8DB2E4; }
 </style>
 </head>
 <body>
-<svg xmlns="http://www.w3.org/2000/svg" width="540" height="860" viewBox="0 0 540 860">
+<svg id="front" xmlns="http://www.w3.org/2000/svg" width="540" height="860" viewBox="0 0 540 860">
   <defs>
     <clipPath id="globe"><ellipse cx="45" cy="0" rx="42" ry="28"/></clipPath>
   </defs>
-  <rect width="540" height="860" fill="#0B4596"/>
+  <rect class="bg" width="540" height="860" fill="#0B4596"/>
 
   <!-- Left strip, rotated to read bottom-to-top: Lumon globe | MACRO DATA / REFINEMENT -->
   <g transform="translate(98,560) rotate(-90)">
@@ -40,5 +44,40 @@
   <path transform="translate(127,738)" fill="#0B4596"
         d="M0,-58 C0,-58 -40,-6 -40,18 A40,40 0 0 0 40,18 C40,-6 0,-58 0,-58 Z"/>
 </svg>
+
+<!-- Back: plain card with a centered Lumon globe -->
+<svg id="back" xmlns="http://www.w3.org/2000/svg" width="540" height="860" viewBox="0 0 540 860" style="display:none">
+  <defs>
+    <clipPath id="globe-back"><ellipse cx="0" cy="0" rx="84" ry="56"/></clipPath>
+  </defs>
+  <rect class="bg" width="540" height="860" fill="#0B4596"/>
+  <g class="center" transform="translate(270,430)">
+    <g clip-path="url(#globe-back)" fill="none" stroke="#8DB2E4" stroke-width="5">
+      <ellipse cx="0" cy="0" rx="28" ry="60"/>
+      <ellipse cx="0" cy="0" rx="60" ry="60"/>
+      <line x1="0" y1="-60" x2="0" y2="60"/>
+      <line x1="-90" y1="-34" x2="90" y2="-34"/>
+      <line x1="-90" y1="34" x2="90" y2="34"/>
+    </g>
+    <ellipse cx="0" cy="0" rx="88" ry="60" fill="none" stroke="#8DB2E4" stroke-width="9"/>
+    <rect x="-86" y="-22" width="172" height="44" rx="8" fill="#0B4596" stroke="#8DB2E4" stroke-width="5"/>
+    <text x="0" y="13" font-size="34" text-anchor="middle" letter-spacing="2">LUMON</text>
+  </g>
+</svg>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const w = Number(params.get('w')) || 540;
+  const side = params.get('side') === 'back' ? 'back' : 'front';
+  document.getElementById('front').style.display = side === 'front' ? '' : 'none';
+  document.getElementById('back').style.display = side === 'back' ? '' : 'none';
+  for (const svg of document.querySelectorAll('svg')) {
+    svg.setAttribute('width', w);
+    svg.setAttribute('viewBox', `0 0 ${w} 860`);
+    svg.querySelector('.bg').setAttribute('width', w);
+    svg.querySelector('.center')?.setAttribute('transform', `translate(${w / 2},430)`);
+  }
+  document.body.style.width = `${w}px`;
+</script>
 </body>
 </html>

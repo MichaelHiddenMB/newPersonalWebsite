@@ -1,2 +1,14 @@
 @import "tailwindcss";
 
+@theme {
+    /* MDR terminal colors, shared by the on-monitor page (three/crt.css) and the full-screen site. */
+    --color-mdr-bg: #061219;
+    --color-mdr-ink: #cdeefa;
+
+    --animate-site-fade-in: site-fade-in 150ms ease-out both; /* just masks the swap; the page is already in place */
+
+    @keyframes site-fade-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+}

@@ -1,0 +1,116 @@
+/* CRT look for the page shown on the desk monitor (see ScreenDisplay.tsx). */
+
+.crt-glass {
+    /* Matches the unlit glass in the 3D model so switching on/off is seamless. */
+    background: #365f59;
+    overflow: hidden;
+    position: relative;
+}
+
+.crt {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background: #061219;
+    text-shadow: 0 0 6px rgba(140, 220, 255, 0.55);
+    animation: crt-flicker 4s infinite steps(1);
+    transition: text-shadow 1.4s ease-in-out;
+}
+
+.crt-power-on {
+    animation: crt-power-on 500ms ease-out both, crt-flicker 4s 500ms infinite steps(1);
+}
+
+/* Booted (e.g. back from the full-screen site): just flicker, no power-on flash. */
+.crt-idle {
+    animation: crt-flicker 4s infinite steps(1);
+}
+
+.crt-shutdown {
+    animation: crt-shutdown 400ms ease-in both;
+}
+
+/* While the camera zooms in, drop the CRT treatment so the page ends identical to the real site. */
+.crt-zooming {
+    animation: none;
+    text-shadow: 0 0 6px rgba(140, 220, 255, 0);
+}
+
+.crt-zooming .crt-overlay {
+    opacity: 0;
+}
+
+@keyframes crt-power-on {
+    0% { transform: scale(0, 0.004); filter: brightness(6); }
+    35% { transform: scale(1, 0.004); filter: brightness(6); }
+    100% { transform: scale(1, 1); filter: brightness(1); }
+}
+
+@keyframes crt-shutdown {
+    0% { transform: scale(1, 1); filter: brightness(1); }
+    55% { transform: scale(1, 0.004); filter: brightness(5); }
+    100% { transform: scale(0, 0.004); filter: brightness(8); }
+}
+
+@keyframes crt-flicker {
+    0%, 100% { opacity: 1; }
+    47% { opacity: 0.94; }
+    48% { opacity: 1; }
+}
+
+/* The page area: the real window size, centered in the glass. Sizes below scale with it (cqw). */
+.crt-page {
+    position: absolute;
+    overflow: hidden;
+    container-type: size;
+}
+
+/* Scanlines + vignette + a soft glass sheen, over everything and click-through. */
+.crt-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    transition: opacity 1.4s ease-in-out;
+    background:
+        radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.06), transparent 45%),
+        radial-gradient(ellipse at center, transparent 58%, rgba(0, 0, 0, 0.5) 100%),
+        repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 3px);
+    background-size: auto, auto, 100% 0.45cqh;
+}
+
+.crt-boot {
+    padding: 6cqh 6cqw;
+    font-size: 2.7cqw;
+    line-height: 1.55;
+    letter-spacing: 0.04em;
+}
+
+.crt-boot p {
+    margin: 0;
+}
+
+.crt-progress {
+    margin-top: 2cqh;
+    height: 1.8cqw;
+    width: 0;
+    background: #cdeefa;
+    box-shadow: 0 0 8px rgba(140, 220, 255, 0.7);
+    animation: crt-progress 700ms steps(14) forwards;
+}
+
+@keyframes crt-progress {
+    to { width: 60%; }
+}
+
+.crt-cursor {
+    display: inline-block;
+    width: 1.5cqw;
+    height: 2.8cqw;
+    margin-top: 1cqh;
+    background: #cdeefa;
+    animation: crt-blink 1s steps(1) infinite;
+}
+
+@keyframes crt-blink {
+    50% { opacity: 0; }
+}
